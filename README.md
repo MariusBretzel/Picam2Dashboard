@@ -46,7 +46,7 @@ This project has been tested on specific hardware and may not work perfectly wit
 ## 🙏 Acknowledgements
 
 - [Flask](https://flask.palletsprojects.com/)
-- [picamera2](https://github.com/iizukanao/picamera2)
+- [picamera2]([https://github.com/iizukanao/picamera2](https://github.com/raspberrypi/picamera2))
 - [OpenCV](https://opencv.org/)
 - [psutil](https://psutil.readthedocs.io/)
 
