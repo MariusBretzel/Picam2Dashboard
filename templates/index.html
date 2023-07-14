@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Camera Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        #video-container {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            position: relative;
+        }
+        #video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .card {
+            margin-bottom: 1rem;
+        }
+        .settings-icon {
+            cursor: pointer;
+        }
+        .fullscreen-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            padding: 10px;
+        }
+        .camera-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>Camera Dashboard</h1>
+            <i class="fas fa-cog settings-icon" data-toggle="modal" data-target="#settingsModal"></i>
+        </div>
+        <div id="video-container" class="mb-3 position-relative">
+            <img id="video" src="/video_feed" class="img-fluid rounded">
+            <div id="camera-info" class="camera-info"></div>
+            <i class="fas fa-expand fullscreen-icon" id="fullscreen-icon"></i>
+        </div>
+        <div id="stats" class="row">
+            <!-- The statistics will be inserted here by the JavaScript code. -->
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="settingsModalLabel">Settings</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Camera Settings Form -->
+                    <form id="camera-settings">
+                        <h6>Camera Settings</h6>
+                        <div class="form-group">
+                            <label for="resolution">Resolution</label>
+                            <select class="form-control" id="resolution">
+                                <option>640x480</option>
+                                <option>1280x720</option>
+                                <option>1920x1080</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="framerate">Frame Rate</label>
+                            <select class="form-control" id="framerate">
+                                <option>15</option>
+                                <option>30</option>
+                                <option>60</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="compression">Compression Level</label>
+                            <input type="range" class="form-control-range" id="compression">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="save-changes">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function updateStats() {
+            $.getJSON('/stats', function(data) {
+                $('#stats').html(
+                    '<div class="col-sm-6 col-lg-3">' +
+                    '<div class="card">' +
+                    '<div class="card-body">' +
+                    '<h5 class="card-title"><i class="fas fa-microchip"></i> CPU Usage</h5>' +
+                    '<p class="card-text">' + data.cpu_percent + '%</p>' +
+                    '</div></div></div>' +
+                    '<div class="col-sm-6 col-lg-3">' +
+                    '<div class="card">' +
+                    '<div class="card-body">' +
+                    '<h5 class="card-title"><i class="fas fa-thermometer-half"></i> CPU Temperature</h5>' +
+                    '<p class="card-text">' + data.cpu_temp.toFixed(1) + '°C</p>' +
+                    '</div></div></div>' +
+                    '<div class="col-sm-6 col-lg-3">' +
+                    '<div class="card">' +
+                    '<div class="card-body">' +
+                    '<h5 class="card-title"><i class="fas fa-memory"></i> RAM Usage</h5>' +
+                    '<p class="card-text">' + data.ram_usage + '%</p>' +
+                    '</div></div></div>' +
+                    '<div class="col-sm-6 col-lg-3">' +
+                    '<div class="card">' +
+                    '<div class="card-body">' +
+                    '<h5 class="card-title"><i class="fas fa-network-wired"></i> Network Usage</h5>' +
+                    '<p class="card-text">' + (data.network_usage / (1024 * 1024)).toFixed(2) + ' MB</p>' +
+                    '</div></div></div>'
+                );
+                $('#camera-info').html('Resolution: ' + data.resolution + ', Framerate: ' + data.framerate);
+            });
+        }
+        setInterval(updateStats, 1000);
+
+        // Event listeners for the form inputs
+        $('#camera-settings').on('change', function() {
+            var resolution = $('#resolution').val();
+            var framerate = $('#framerate').val();
+            var compression = $('#compression').val();
+            $.post('/update_camera_settings', {resolution: resolution, framerate: framerate, compression: compression});
+        });
+
+        // Event listener for the fullscreen button
+        $('#fullscreen-icon').on('click', function() {
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) { /* Safari */
+                    document.webkitExitFullscreen();
+                }
+                $('#fullscreen-icon').removeClass('fa-compress').addClass('fa-expand');
+            } else {
+                if ($('#video-container')[0].requestFullscreen) {
+                    $('#video-container')[0].requestFullscreen();
+                } else if ($('#video-container')[0].webkitRequestFullscreen) { /* Safari */
+                    $('#video-container')[0].webkitRequestFullscreen();
+                }
+                $('#fullscreen-icon').removeClass('fa-expand').addClass('fa-compress');
+            }
+        });
+
+        // Event listener for the settings modal
+        $('#settingsModal').on('show.bs.modal', function() {
+            $.getJSON('/camera_settings', function(data) {
+                $('#resolution').val(data.resolution);
+                $('#framerate').val(data.framerate);
+                $('#compression').val(data.compression);
+            });
+        });
+
+
+        // Event listener for the "Save changes" button
+        $('#save-changes').on('click', function() {
+            $('#settingsModal').modal('hide');
+        });
+    </script>
+</body>
+</html>
