@@ -27,7 +27,11 @@ Follow these steps to install Picam2Dashboard:
 
 3. Install the dependencies:
    ```bash
-   pip3 install flask picamera2 numpy opencv-python psutil
+   pip3 install flask
+   pip3 install picamera2
+   pip3 install numpy
+   pip3 install opencv-python
+   pip3 install psuti
 
 ## 🏃‍♂️ How to Run
 
