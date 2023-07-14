@@ -15,26 +15,29 @@ Picam2Dashboard is a real-time camera dashboard for Raspberry Pi. It provides a 
 
 ## 🛠️ Installation
 
-1. Clone the repository:
+Follow these steps to install Picam2Dashboard:
 
-git clone https://github.com/MariusBretzel/Picam2Dashboard.git
-
+1. Clone the repository. Open a terminal and run the following command:
+   ```bash
+   git clone https://github.com/MariusBretzel/Picam2Dashboard.git
+   
 2. Navigate to the project directory:
-
-cd Picam2Dashboard
+   ```bash
+   cd Picam2Dashboard
 
 3. Install the dependencies:
-
-pip3 install flask picamera2 numpy opencv-python psutil
-
+   ```bash
+   pip3 install flask picamera2 numpy opencv-python psutil
 
 ## 🏃‍♂️ How to Run
 
 1. Run the Python script:
+   ```bash
+   python3 Picam2Dashboard.py
 
-python3 Picam2Dashboard.py
-
-2. Open your web browser and navigate to `http://localhost:5000`.
+2. Access the dashboard:
+   - If you are using the web browser on the same Raspberry Pi, navigate to http://localhost:5000.
+   - If you are using a different computer on the same network, replace localhost with the local IP address of your Raspberry Pi. For example, if the local IP address of your         Raspberry Pi is 192.168.1.10, navigate to http://192.168.1.10:5000.
 
 ## 📝 Note
 
