@@ -31,7 +31,7 @@ Follow these steps to install Picam2Dashboard:
    pip3 install picamera2
    pip3 install numpy
    pip3 install opencv-python
-   pip3 install psuti
+   pip3 install psutil
 
 ## 🏃‍♂️ How to Run
 
